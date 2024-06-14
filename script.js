@@ -45,6 +45,7 @@ require(["vs/editor/editor.main"], function () {
   // TODO: https://github.com/brijeshb42/monaco-themes/blob/master/scripts/download.jsを用いてテーマをダウンロードする
   const customThemes = {
     cobalt: "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Cobalt.json",
+    dracula: "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Dracula.json",
     monokai: "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Monokai.json",
     "night-owl": "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Night Owl.json",
     "solarized-dark": "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Solarized-dark.json",
