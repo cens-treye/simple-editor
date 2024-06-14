@@ -1,0 +1,30 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#editor {
+  flex: 1;
+}
+
+#controls {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #f1f1f1;
+}
+
+#language-selector, #theme-selector {
+  padding: 5px;
+  font-size: 14px;
+}
