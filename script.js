@@ -1,11 +1,7 @@
 require.config({ paths: { vs: "https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.21.2/min/vs" } });
 
 require(["vs/editor/editor.main"], function () {
-  const editor = monaco.editor.create(document.getElementById("editor"), {
-    value: "",
-    language: "cpp",
-    theme: "vs-dark",
-  });
+  const editor = monaco.editor.create(document.getElementById("editor"), {});
 
   // ウィンドウのリサイズイベントに対してエディターのレイアウトを更新
   window.addEventListener("resize", () => {
@@ -28,6 +24,10 @@ require(["vs/editor/editor.main"], function () {
     const newLanguage = this.value;
     monaco.editor.setModelLanguage(editor.getModel(), newLanguage);
   });
+  function setLanguage(language) {
+    languageSelector.value = language;
+    languageSelector.dispatchEvent(new Event("change"));
+  }
 
   // カスタムテーマを読み込む関数
   const loadTheme = (themeName, themePath) => {
@@ -45,6 +45,7 @@ require(["vs/editor/editor.main"], function () {
   // TODO: https://github.com/brijeshb42/monaco-themes/blob/master/scripts/download.jsを用いてテーマをダウンロードする
   const customThemes = {
     cobalt: "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Cobalt.json",
+    dracula: "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Dracula.json",
     monokai: "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Monokai.json",
     "night-owl": "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Night Owl.json",
     "solarized-dark": "https://raw.githubusercontent.com/brijeshb42/monaco-themes/master/themes/Solarized-dark.json",
@@ -77,9 +78,50 @@ require(["vs/editor/editor.main"], function () {
       monaco.editor.setTheme(newTheme);
     }
   });
+  function setTheme(theme) {
+    themeSelector.value = theme;
+    themeSelector.dispatchEvent(new Event("change"));
+  }
 
-  // デフォルト
-  monaco.editor.setModelLanguage(editor.getModel(), "cpp");
-  editor.setValue(`// cpp code here...`);
-  languageSelector.value = "cpp";
+  // セーブされた情報をロード
+  const editorData = new EditorData();
+  editorData.load();
+  editor.setValue(editorData.data.code);
+  setLanguage(editorData.data.language);
+  setTheme(editorData.data.theme);
+
+  // 内容が変更されたときにデータを保存
+  editor.onDidChangeModelContent(() => {
+    editorData.data.code = editor.getValue();
+    editorData.save();
+  });
+  themeSelector.addEventListener("change", function () {
+    editorData.data.theme = this.value;
+    editorData.save();
+  });
+  languageSelector.addEventListener("change", function () {
+    editorData.data.language = this.value;
+    editorData.save();
+  });
 });
+
+// データ保存用のクラスを作成
+// strucutre: { "ver" : "version", "data" : { "language" : "language", "theme" : "theme", "code" : "code" } }
+class EditorData {
+  constructor() {
+    this.version = "1.0";
+    this.data = { language: "cpp", theme: "dracula", code: "// codes here" };
+  }
+  load() {
+    const data = JSON.parse(localStorage.getItem("editorData"));
+    if (!data) {
+      return;
+    }
+    if (data && data.ver === this.version) {
+      this.data = data.data;
+    }
+  }
+  save() {
+    localStorage.setItem("editorData", JSON.stringify({ ver: this.version, data: this.data }));
+  }
+}
